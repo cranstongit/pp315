@@ -16,7 +16,7 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminsController {
 
     private final UserService userService;
