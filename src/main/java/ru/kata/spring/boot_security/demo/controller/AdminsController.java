@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
@@ -14,8 +15,9 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
+import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/admin")
 public class AdminsController {
 
@@ -28,19 +30,36 @@ public class AdminsController {
     }
 
 
-    @GetMapping({"/", ""})
+    @GetMapping({"users"})
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-    public ModelAndView adminPage(Principal principal) {
+    public List<User> adminPage() {
 
-        ModelAndView mavAdmin = new ModelAndView("admin");
+        return userService.findAll();
 
-        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
-        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
-        mavAdmin.addObject("newUser", new User());
-        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
+//        ModelAndView mavAdmin = new ModelAndView("admin");
+//
+//        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
+//        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
+//        mavAdmin.addObject("newUser", new User());
+//        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
 
-        return mavAdmin;
+//        return mavAdmin;
     }
+
+
+//    @GetMapping({""})
+//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+//    public ModelAndView adminPage(Principal principal) {
+//
+//        ModelAndView mavAdmin = new ModelAndView("admin");
+//
+//        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
+//        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
+//        mavAdmin.addObject("newUser", new User());
+//        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
+//
+//        return mavAdmin;
+//    }
 
 
     @GetMapping("/error")
