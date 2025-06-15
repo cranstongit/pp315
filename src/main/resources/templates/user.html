@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
 </head>
 <body>
-    <div class="container-fluid"> <!-- контейнер-->
+    <div class="container-fluid px-0"> <!-- контейнер-->
         <sec:authorize access="hasRole('ROLE_USER')">
             <div>
                 <div th:if="${user}"> <!-- начало блока данных user если данные в базе-->
@@ -40,7 +40,7 @@
                     </nav>
                 </div>
 
-                <div class="row"> <!-- сетка -->
+                <div class="row" style="height: 100vh;"> <!-- сетка -->
 
                     <div class="col-2" style="padding-right:0;"> <!-- 2 ячейки из 12 под две вкладки слева -->
                         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="margin-top:15px;">
@@ -49,16 +49,16 @@
                     </div>
 
                     <!-- начало вкладок контента -->
-                    <div class="col-10" style="background-color: #f2f2f2; padding: 30px;"> <!-- сетка контента справа, серый цвет -->
+                    <div class="col-10" style="background-color: #f2f2f2; padding: 40px;"> <!-- сетка контента справа, серый цвет -->
 
                         <div class="tab-content" id="v-pills-tabContent"> <!-- начало контента области User -->
                             <h2>User information-page</h2>
 
-                            <nav class="navbar navbar-light bg-light" style="background-color: #f2f2f2;">  <!-- серая nav панель All users-->
+                            <nav class="navbar navbar-light bg-light" style="background-color: #f2f2f2; border: 1px solid #ccc;">  <!-- серая nav панель About user-->
                                 <a class="navbar-brand"><strong>About user</strong></a>
                             </nav>
 
-                            <div class="table-responsive" style="background-color: white; padding: 20px;">  <!-- блок информации о user -->
+                            <div class="table-responsive" style="background-color: white; padding: 20px; border: 1px solid #ccc;">  <!-- блок информации о user -->
                                 <table class="table table-striped">  <!-- таблица информации об администраторе -->
                                     <thead>  <!-- оглавление таблицы -->
                                         <tr>

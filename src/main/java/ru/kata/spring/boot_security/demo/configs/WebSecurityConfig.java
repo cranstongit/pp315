@@ -33,9 +33,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                     .anyRequest().authenticated() //любые реквесты должны быть аутентифицированы
                 .and()
-                .formLogin().successHandler(successUserHandler).permitAll() //форма Spring, разрешена для всех. После атентификации переходит в соответствии с succesUserHandler
+                .formLogin().loginPage("/login")//.loginProcessingUrl("/login")
+                    .successHandler(successUserHandler).permitAll() //форма Spring, разрешена для всех. После атентификации переходит в соответствии с succesUserHandler
                 .and()
                 .logout().permitAll(); //форма Logout доступна всем
+
+//                .anyRequest().authenticated()
+//                .and()
+////                .rememberMe()
+////                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21)) //выставляем длительность сессии
+////                    .key("alex!Security@Token#Encryption") //ключ для шифрования remember-me токена, который Spring хранит в cookie
+////                .and()
+//                .logout()
+////                    .logoutUrl("/logout")
+////                    .clearAuthentication(true)
+////                    .invalidateHttpSession(true)
+////                    .deleteCookies("JSESSIONID", "remember-me")
+////                    .logoutSuccessUrl("/")
+//                .permitAll();
 
     }
 

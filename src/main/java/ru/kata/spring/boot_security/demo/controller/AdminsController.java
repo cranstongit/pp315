@@ -1,14 +1,20 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
+import ru.kata.spring.boot_security.demo.exceptionhandler.UserWrongData;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -30,36 +36,36 @@ public class AdminsController {
     }
 
 
-    @GetMapping({"users"})
-    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-    public List<User> adminPage() {
-
-        return userService.findAll();
-
-//        ModelAndView mavAdmin = new ModelAndView("admin");
+//    @GetMapping({"users"})
+//    public List<User> adminPage() {
 //
-//        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
-//        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
-//        mavAdmin.addObject("newUser", new User());
-//        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
-
-//        return mavAdmin;
-    }
-
-
-//    @GetMapping({""})
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public ModelAndView adminPage(Principal principal) {
-//
-//        ModelAndView mavAdmin = new ModelAndView("admin");
-//
-//        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
-//        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
-//        mavAdmin.addObject("newUser", new User());
-//        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
-//
-//        return mavAdmin;
+//        return userService.findAll();
 //    }
+//
+//    @GetMapping("users/{username}")
+//    public User userPage(@PathVariable String username) {
+//
+//        if (userService.findByUsername(username) == null) {
+//            throw new UserNotFoundException("User with the username " + username + " not found in the DB");
+//        }
+//
+//        return userService.findByUsername(username);
+//    }
+
+
+    @GetMapping({""})
+    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+    public ModelAndView adminPage(Principal principal) {
+
+        ModelAndView mavAdmin = new ModelAndView("admin");
+
+        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
+        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
+        mavAdmin.addObject("newUser", new User());
+        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
+
+        return mavAdmin;
+    }
 
 
     @GetMapping("/error")
