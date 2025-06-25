@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.dto.UserDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -57,8 +58,8 @@ public class AdminsController {
     }
 
 
-    @PostMapping("newuser2")
-    public ResponseEntity<HttpStatus> createUser(@Valid @RequestBody User user,
+    @PostMapping("userman")
+    public ResponseEntity<HttpStatus> createUser(@Valid @RequestBody UserDto userDto,
                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -72,7 +73,7 @@ public class AdminsController {
             throw new UserNotCreatedException(sb.toString());
         }
 
-        userService.save(user);
+        userService.save(convertToUser(userDto));
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -164,6 +165,19 @@ public class AdminsController {
         }
 
         return new ModelAndView("redirect:/admin");
+    }
+
+    public User convertToUser(UserDto userDto) {
+        User user = new User();
+
+        user.setUsername(userDto.getUsername());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setRoleIds(userDto.getRoleIds());
+
+        return user;
     }
 
 }

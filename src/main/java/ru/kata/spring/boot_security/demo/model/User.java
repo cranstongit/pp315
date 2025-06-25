@@ -39,15 +39,17 @@ public class User implements UserDetails {
    private String lastName;
 
    @Column(name = "email", nullable = false, length = 100)
-//   @Email
+   @Email
    private String email;
 
    @Column(name = "username", nullable = false, unique = true, length = 100)
-//   @NotEmpty(message = "Name should not be empty")
-//   @Size(min = 2, max = 100, message = "must be between 2 and 100")
+   @NotEmpty(message = "Name should not be empty")
+   @Size(min = 2, max = 100, message = "must be between 2 and 100")
    private String username;
 
    @Column(name = "password", nullable = false, length = 100)
+   @NotEmpty(message = "Name should not be empty")
+   @Size(min = 2, max = 100, message = "must be between 2 and 100")
    private String password;
 
    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
