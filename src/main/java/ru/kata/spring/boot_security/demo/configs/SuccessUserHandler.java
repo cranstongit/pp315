@@ -20,9 +20,9 @@ public class SuccessUserHandler implements AuthenticationSuccessHandler { //об
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities()); //authorityListToSet(...) преобразует список в Set, authentication.getAuthorities() возвращает список ролей пользователя (ROLE_USER, ROLE_ADMIN)
         // AuthorityUtils - вспомогательный класс Spring Security, который упрощает работу с объектами GrantedAuthority
         if (roles.contains("ROLE_ADMIN")) {
-            httpServletResponse.sendRedirect("/api/admin");
+            httpServletResponse.sendRedirect("/admin");
         } else if (roles.contains("ROLE_USER")) {
-            httpServletResponse.sendRedirect("/api/user");
+            httpServletResponse.sendRedirect("/user");
         } else {
             httpServletResponse.sendRedirect("/");
         }

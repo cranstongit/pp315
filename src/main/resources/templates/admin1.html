@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <title>Admin's page</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
-    <script>
-        console.log("HTML дошёл до head");
-    </script>
 </head>
 <body>
     <div class="container-fluid px-0"> <!-- контейнер-->
@@ -79,7 +76,7 @@
                                         </nav>
 
                                         <div style="padding: 20px; border: 1px solid #ccc;">
-                                            <table id="usersTableBody" class="table table-striped">  <!-- таблица списка пользователей -->
+                                            <table class="table table-striped">  <!-- таблица списка пользователей -->
                                                 <thead>  <!-- оглавление таблицы -->
                                                     <tr>
                                                         <th scope="col">ID</th>
@@ -93,7 +90,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-<!--                                                тут подключается userList.js-->
 <!--                                                    <tr th:each="user : ${getUsers}">-->
 <!--                                                        <th scope="row" th:text="${user.id}">Id</th>-->
 <!--                                                        <td th:text="${user.firstName}">First Name</td>-->
@@ -244,13 +240,13 @@
                                         </div>
                                     </div> <!-- конец таблицы списка пользователей -->
 
-                                    <div class="tab-pane fade" id="content-newUserTab" role="tabpanel" aria-labelledby="horiz-newUserTab"> <!-- контент нового пользователя -->
+<!--                                    <div class="tab-pane fade" id="content-newUserTab" role="tabpanel" aria-labelledby="horiz-newUserTab"> &lt;!&ndash; контент нового пользователя &ndash;&gt;-->
 
-                                        <nav class="navbar navbar-light bg-light" style="background-color: #f2f2f2; border: 1px solid #ccc;">  <!-- серая nav панель About new user-->
-                                            <a class="navbar-brand font-weight-bold">Add new user</a>
-                                        </nav>
+<!--                                        <nav class="navbar navbar-light bg-light" style="background-color: #f2f2f2; border: 1px solid #ccc;">  &lt;!&ndash; серая nav панель About new user&ndash;&gt;-->
+<!--                                            <a class="navbar-brand font-weight-bold">Add new user</a>-->
+<!--                                        </nav>-->
 
-                                        <div style="padding: 15px; display: flex; justify-content: center; border: 1px solid #ccc;"> <!--таблица ввода нового пользователя-->
+<!--                                        <div style="padding: 15px; display: flex; justify-content: center; border: 1px solid #ccc;"> &lt;!&ndash;таблица ввода нового пользователя&ndash;&gt;-->
 <!--                                            <form th:method="POST" th:action="@{/admin/newuser}" th:object="${newUser}" style="width: 300px; text-align: center;">-->
 <!--                                                <div class="form-group">-->
 <!--                                                    <label for="firstName" class="font-weight-bold">First name</label>-->
@@ -292,7 +288,7 @@
 <!--                                                </div>-->
 <!--                                                <button type="submit" value="Add new User" class="btn btn-success">Add new user</button>-->
 <!--                                            </form>-->
-                                        </div> <!--конец таблицы ввода нового пользователя-->
+<!--                                        </div> &lt;!&ndash;конец таблицы ввода нового пользователя&ndash;&gt;-->
                                     </div> <!-- конец контента нового пользователя -->
                                 </div> <!-- конец контента горизонтальных вкладок -->
                             </div> <!-- конец области контента для боковой кнопки Admin слева. Две горизонтальных вкладки: список пользователей и создание нового пользователя -->
@@ -306,7 +302,7 @@
                                 </nav>
 
                                 <div class="table-responsive" style="background-color: white; padding: 20px; border: 1px solid #ccc;">  <!-- блок информации об администраторе -->
-                                    <table id="adminInfoBody" class="table table-striped">  <!-- таблица информации об администраторе -->
+                                    <table class="table table-striped">  <!-- таблица информации об администраторе -->
                                         <thead>  <!-- оглавление таблицы -->
                                             <tr>
                                                 <th scope="col">ID</th>
@@ -317,8 +313,19 @@
                                                 <th scope="col">Role</th>
                                             </tr>
                                         </thead>
-                                        <tbody>  <!-- тело таблицы информации админа-->
-<!--                                        тут подключается adminInfo.js-->
+                                        <tbody>  <!-- тело таблицы -->
+                                            <tr>
+                                                <th scope="row" th:text="${admin.id}">Id</th>
+                                                <td th:text="${admin.firstName}">First Name</td>
+                                                <td th:text="${admin.lastName}">Last Name</td>
+                                                <td th:text="${admin.email}">Email</td>
+                                                <td th:text="${admin.username}">Username</td>
+                                                <td>
+                                                    <span th:each="role, iterStat : ${admin.roles}">
+                                                        <span th:text="${role.roleName}"></span><span th:text="${iterStat.last ? '' : ', '}"></span>
+                                                    </span>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>  <!-- окончание таблицы информации об администраторе -->
                                 </div> <!-- конец блока информации об администраторе -->
@@ -332,10 +339,6 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script th:src="@{/js/bootstrap.bundle.js}"></script>
-    <script src="/js/userList.js"></script>
-    <script src="/js/adminInfo.js"></script>
-    <script>
-        console.log("HTML дошёл до конца body");
-    </script>
+    <script th:src="@{/js/userList.js}"></script>
 </body>
 </html>

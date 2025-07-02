@@ -12,9 +12,9 @@ public class AuthController {
         return new ModelAndView("login");
     }
 
-//    @GetMapping("/login")
-//    public String login() {
-//        return "login1"; // имя шаблона login1.html
-//    }
+    @GetMapping("/admin")
+    public ModelAndView adminPage() {
+        return new  ModelAndView("admin");
+    }
 
 }

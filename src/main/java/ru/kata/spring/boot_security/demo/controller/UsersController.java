@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.security.Principal;
 
 @Controller
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 public class UsersController {
 
     private final UserService userService;
@@ -21,7 +21,7 @@ public class UsersController {
     }
 
 
-    @GetMapping({"/", ""})
+    @GetMapping({""})
     public ModelAndView visitUserPage(Principal principal) {
 
         User user = userService.findByUsername(principal.getName()); //получаем данные юзера
