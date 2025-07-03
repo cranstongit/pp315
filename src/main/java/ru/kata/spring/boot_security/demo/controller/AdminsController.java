@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.dto.UserDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -23,6 +24,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -60,7 +62,8 @@ public class AdminsController {
     }
 
 
-    @PostMapping("userman")
+    @PostMapping("newuser")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<HttpStatus> createUser(@Valid @RequestBody UserDto userDto,
                                                  BindingResult bindingResult) {
 
@@ -78,6 +81,14 @@ public class AdminsController {
         userService.save(convertToUser(userDto));
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/roles")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<Role>> getAllRoles() {
+
+        return ResponseEntity.ok(new ArrayList<>(roleService.findAll()));
+        //return ResponseEntity.ok(roleService.findAll().stream().toList());
     }
 
 
@@ -114,7 +125,7 @@ public class AdminsController {
     }
 
 
-    @PostMapping("/newuser")
+    @PostMapping("/new")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ModelAndView newUser(@ModelAttribute("newUser") User user) {
 
