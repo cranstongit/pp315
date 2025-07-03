@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Admin's page</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script>
         console.log("HTML дошёл до head");
     </script>
@@ -251,47 +253,44 @@
                                         </nav>
 
                                         <div style="padding: 15px; display: flex; justify-content: center; border: 1px solid #ccc;"> <!--таблица ввода нового пользователя-->
-<!--                                            <form th:method="POST" th:action="@{/admin/newuser}" th:object="${newUser}" style="width: 300px; text-align: center;">-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="firstName" class="font-weight-bold">First name</label>-->
-<!--                                                    <input type="text" th:field="*{firstName}" id="firstName" class="form-control" aria-describedby="firstNameField">-->
-<!--                                                </div>-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="lastName" class="font-weight-bold">Last name</label>-->
-<!--                                                    <input type="text" th:field="*{lastName}" id="lastName" class="form-control" aria-describedby="lastNameField">-->
-<!--                                                </div>-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="email" class="font-weight-bold">Email</label>-->
-<!--                                                    <input type="text" th:field="*{email}" id="email" class="form-control" aria-describedby="emailField">-->
-<!--                                                </div>-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="username" class="font-weight-bold">Username</label>-->
-<!--                                                    <input type="text" th:field="*{username}" id="username" class="form-control" aria-describedby="usernameField" required>-->
-<!--                                                    <small id="usernameField" class="form-text text-muted">-->
-<!--                                                        required field-->
-<!--                                                    </small>-->
-<!--                                                </div>-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="password" class="font-weight-bold">Password</label>-->
-<!--                                                    <input type="password" th:field="*{password}" id="password" class="form-control" aria-describedby="passwordField" required>-->
-<!--                                                    <small id="passwordField" class="form-text text-muted">-->
-<!--                                                        required field-->
-<!--                                                    </small>-->
-<!--                                                </div>-->
-<!--                                                <div class="form-group">-->
-<!--                                                    <label for="roleIds" class="font-weight-bold">Roles</label>-->
-<!--                                                    <select multiple class="custom-select" th:field="*{roleIds}" id="roleIds" aria-describedby="roleField" size="2" required>-->
-<!--                                                        <option th:each="role : ${allRoles}"-->
-<!--                                                            th:value="${role.id}"-->
-<!--                                                            th:text="${role.roleName}">-->
-<!--                                                        </option>-->
-<!--                                                    </select>-->
-<!--                                                    <small id="roleField" class="form-text text-muted">-->
-<!--                                                        required field-->
-<!--                                                    </small>-->
-<!--                                                </div>-->
-<!--                                                <button type="submit" value="Add new User" class="btn btn-success">Add new user</button>-->
-<!--                                            </form>-->
+                                                <form id="newUserForm" style="width: 300px; text-align: center;">
+                                                    <div class="form-group">
+                                                        <label for="firstNameNew" class="font-weight-bold">First name</label>
+                                                        <input type="text" id="firstNameNew" class="form-control" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="lastNameNew" class="font-weight-bold">Last name</label>
+                                                        <input type="text" id="lastNameNew" class="form-control" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="emailNew" class="font-weight-bold">Email</label>
+                                                        <input type="email" id="emailNew" class="form-control" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="usernameNew" class="font-weight-bold">Username</label>
+                                                        <input type="text" id="usernameNew" class="form-control" required>
+                                                        <small id="usernameField" class="form-text text-muted">
+                                                            required field
+                                                        </small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="passwordNew" class="font-weight-bold">Password</label>
+                                                        <input type="password" id="passwordNew" class="form-control" required>
+                                                        <small id="passwordField" class="form-text text-muted">
+                                                            required field
+                                                        </small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="roleIdsNew" class="font-weight-bold">Roles</label>
+                                                        <select multiple class="custom-select" id="roleIdsNew" size="2" required>
+                                                            <!-- Варианты ролей отрисовываются JS-ом -->
+                                                        </select>
+                                                        <small id="roleField" class="form-text text-muted">
+                                                            required field
+                                                        </small>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Add new user</button>
+                                                </form>
                                         </div> <!--конец таблицы ввода нового пользователя-->
                                     </div> <!-- конец контента нового пользователя -->
                                 </div> <!-- конец контента горизонтальных вкладок -->
@@ -334,6 +333,7 @@
     <script th:src="@{/js/bootstrap.bundle.js}"></script>
     <script src="/js/userList.js"></script>
     <script src="/js/adminInfo.js"></script>
+    <script src="/js/newUser.js"></script>
     <script>
         console.log("HTML дошёл до конца body");
     </script>

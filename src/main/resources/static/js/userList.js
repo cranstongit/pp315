@@ -1,10 +1,11 @@
 console.log("List of users loaded");
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadUsers();
+    window.loadUsers(); // вызываем через window (но можно и просто loadUsers())
 });
 
-function loadUsers() {
+// Делаем функции глобально доступными
+window.loadUsers = function () {
     fetch('/api/admin/users')
         .then(response => {
             if (!response.ok) {
@@ -12,11 +13,11 @@ function loadUsers() {
             }
             return response.json();
         })
-        .then(renderUsersTable)
+        .then(window.renderUsersTable) // тоже делаем глобальной
         .catch(error => console.error("Ошибка загрузки всех пользователей:", error));
-}
+};
 
-function renderUsersTable(users) {
+window.renderUsersTable = function (users) {
     const usersTableBody = document.getElementById("usersTableBody");
     usersTableBody.innerHTML = "";
 
@@ -35,4 +36,4 @@ function renderUsersTable(users) {
         `;
         usersTableBody.appendChild(row);
     });
-}
+};

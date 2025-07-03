@@ -48,7 +48,7 @@ public class AdminsController {
     }
 
 
-    @GetMapping("/me")
+    @GetMapping("me")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<User> getAdminInfo(Principal principal) {
 
@@ -83,12 +83,11 @@ public class AdminsController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/roles")
+    @GetMapping("roles")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Role>> getAllRoles() {
 
         return ResponseEntity.ok(new ArrayList<>(roleService.findAll()));
-        //return ResponseEntity.ok(roleService.findAll().stream().toList());
     }
 
 
