@@ -5,8 +5,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class UserDto {
+public class NewUserDto {
 
+    @NotEmpty(message = "Name should not be empty")
     private String firstName;
 
     private String lastName;

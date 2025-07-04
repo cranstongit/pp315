@@ -12,8 +12,36 @@ function loadAdminInfo() {
             }
             return response.json();
         })
-        .then(renderAdminInfo)
+        .then(admin => {
+            renderAdminNavBar(admin);
+            renderAdminInfo(admin);
+        })
+        .then()
         .catch(error => console.error("Ошибка загрузки администратора:", error));
+}
+
+function renderAdminNavBar(admin) {
+    const adminNavBarBody = document.getElementById("adminNavBarBody");
+
+    if (!adminNavBarBody) {
+        console.error("Элемент с ID adminNavBarBody не найден!");
+        return;
+    }
+
+    adminNavBarBody.innerHTML = "";
+
+    const adminData = document.createElement("a");
+    const roles = admin.roles.map(r => r.roleName).join(", ");
+
+    adminData.className = "navbar-brand";
+    adminData.href = "#";
+    adminData.innerHTML = `
+        <b>${admin.username}</b>
+        <span> with roles: </span>
+        <span>${roles}</span>
+    `;
+
+    adminNavBarBody.appendChild(adminData);
 }
 
 function renderAdminInfo(admin) {
