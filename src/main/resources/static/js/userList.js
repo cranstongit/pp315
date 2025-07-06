@@ -31,9 +31,18 @@ window.renderUsersTable = function (users) {
             <td>${user.email}</td>
             <td>${user.username}</td>
             <td>${roles}</td>
-            <td><button class="btn btn-info btn-sm">Edit</button></td>
-            <td><button class="btn btn-danger btn-sm">Delete</button></td>
+            <td><button class="btn btn-info btn-sm" data-user-id="${user.id}">Edit</button></td>
+            <td><button class="btn btn-danger btn-sm" data-user-id="${user.id}">Delete</button></td>
         `;
+
+        row.querySelector(".btn-info").addEventListener("click", () => {
+            openEditModal(user);
+        });
+
+        row.querySelector(".btn-danger").addEventListener("click", () => {
+            openDeleteModal(user);
+        });
+
         usersTableBody.appendChild(row);
     });
 };

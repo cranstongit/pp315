@@ -5,8 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +19,13 @@ import ru.kata.spring.boot_security.demo.dto.NewUserDto;
 import ru.kata.spring.boot_security.demo.dto.ResponceUserDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
+import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotUpdatedException;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -47,19 +51,6 @@ public class AdminsController {
         return ResponseEntity.ok(userService.findAll());
     }
 
-
-//    @GetMapping("me1")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-//    public ResponseEntity<User> getAdminInfo1(Principal principal) {
-//
-//        User user = userService.findByUsername(principal.getName());
-//
-//        if (user == null) {
-//            throw new UserNotFoundException("User with the username " + principal.getName() + " not found in the DB");
-//        }
-//
-//        return ResponseEntity.ok(user);
-//    }
 
     @GetMapping("me")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -96,6 +87,7 @@ public class AdminsController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+
     @GetMapping("roles")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Role>> getAllRoles() {
@@ -104,22 +96,47 @@ public class AdminsController {
     }
 
 
+    @DeleteMapping("delete")
+    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+    public ResponseEntity<String> removeUser(@RequestParam long id) {
+
+        try {
+            userService.delete(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Пользователь c " + id + " не найден: " + e.getMessage());
+        }
+    }
 
 
+    @PatchMapping("edit")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> createUser(@Valid @RequestBody NewUserDto newUserDto,
+                                                 BindingResult bindingResult, @RequestParam long id) {
 
-//    @GetMapping({""})
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public ModelAndView adminPage(Principal principal) {
-//
-//        ModelAndView mavAdmin = new ModelAndView("admin");
-//
-//        mavAdmin.addObject("getUsers", userService.findAll()); //получаем всех пользователей
-//        mavAdmin.addObject("admin", userService.findByUsername(principal.getName()));
-//        mavAdmin.addObject("newUser", new User());
-//        mavAdmin.addObject("allRoles", roleService.findAll()); // Добавим роли
-//
-//        return mavAdmin;
-//    }
+        if (bindingResult.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fe : fieldErrors) {
+                sb.append(fe.getField())
+                        .append(" - ").append(fe.getDefaultMessage())
+                        .append(";");
+            }
+            throw new UserNotUpdatedException(sb.toString());
+        }
+
+        try {
+            userService.update(id, convertToNewUserDto(newUserDto));
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Пользователь c " + id + " не найден: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ошибка изменения пользователя с " + id + ". Ошибка: " + e.getMessage());
+        }
+    }
 
 
     @GetMapping("/error")
@@ -137,61 +154,7 @@ public class AdminsController {
     }
 
 
-    @PostMapping("/new")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ModelAndView newUser(@ModelAttribute("newUser") User user) {
-
-        try {
-            userService.save(user);
-        } catch (IllegalArgumentException e) {
-            ModelAndView mavError = new ModelAndView("error"); // имя шаблона ошибки
-            mavError.addObject("errorMessage", "Ошибка с ролями: " + e.getMessage());
-            return mavError;
-        } catch (Exception e) {
-            ModelAndView mavError = new ModelAndView("error"); // имя шаблона ошибки
-            mavError.addObject("errorMessage", "Ошибка: " + e.getMessage());
-            return mavError;
-        }
-
-        return new ModelAndView("redirect:/admin");
-    }
-//
-//
-//    @PostMapping("/deleteuser")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public ModelAndView removeUser(@RequestParam("id") long id) {
-//
-//        try {
-//            userService.delete(id);
-//        } catch (EntityNotFoundException e) {
-//            ModelAndView mavError = new ModelAndView("error");
-//            mavError.addObject("errorMessage", "Проблема с удалением пользователя: " + e.getMessage());
-//            return mavError;
-//        }
-//
-//        return new ModelAndView("redirect:/admin");
-//    }
-//
-//
-//    @PostMapping("/edituser")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public ModelAndView updateUser(@RequestParam("id") long id, @ModelAttribute("user") User user) {
-//
-//        try {
-//            userService.update(id, user);
-//        } catch (EntityNotFoundException e) {
-//            ModelAndView mavError = new ModelAndView("error");
-//            mavError.addObject("errorMessage", "Ошибка при изменении: " + e.getMessage());
-//            return mavError;
-//        } catch (RuntimeException e) {
-//            ModelAndView mavError = new ModelAndView("error");
-//            mavError.addObject("errorMessage", "Ошибка при изменении: " + e.getMessage());
-//            return mavError;
-//        }
-//
-//        return new ModelAndView("redirect:/admin");
-//    }
-
+    //DTO methods
     public User convertToNewUserDto(NewUserDto newUserDto) {
         User user = new User();
 

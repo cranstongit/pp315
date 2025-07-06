@@ -36,7 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().loginPage("/login")//.loginProcessingUrl("/login")
                     .successHandler(successUserHandler).permitAll() //форма Spring, разрешена для всех. После атентификации переходит в соответствии с succesUserHandler
                 .and()
-                .logout().permitAll(); //форма Logout доступна всем
+                .logout()
+                    .logoutSuccessUrl("/login?logout") // вот эта строка решит проблему
+                    .permitAll();
 
 //                .anyRequest().authenticated()
 //                .and()
