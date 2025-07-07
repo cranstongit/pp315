@@ -24,12 +24,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.userService = userService;
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                     .antMatchers("/css/**", "/js/**").permitAll() //эти пути открыты для всех, белый список
-                    .antMatchers("/api/admin/**").hasRole("ADMIN") //.hasRole("ADMIN") автоматически ищет "ROLE_ADMIN"
+                    .antMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN") //.hasRole("ADMIN") автоматически ищет "ROLE_ADMIN"
                     .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                     .anyRequest().authenticated() //любые реквесты должны быть аутентифицированы
                 .and()
@@ -37,24 +38,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .successHandler(successUserHandler).permitAll() //форма Spring, разрешена для всех. После атентификации переходит в соответствии с succesUserHandler
                 .and()
                 .logout()
-                    .logoutSuccessUrl("/login?logout") // вот эта строка решит проблему
+                    .logoutSuccessUrl("/login?logout") //перенаправление на страницу логина после логаута
                     .permitAll();
-
-//                .anyRequest().authenticated()
-//                .and()
-////                .rememberMe()
-////                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21)) //выставляем длительность сессии
-////                    .key("alex!Security@Token#Encryption") //ключ для шифрования remember-me токена, который Spring хранит в cookie
-////                .and()
-//                .logout()
-////                    .logoutUrl("/logout")
-////                    .clearAuthentication(true)
-////                    .invalidateHttpSession(true)
-////                    .deleteCookies("JSESSIONID", "remember-me")
-////                    .logoutSuccessUrl("/")
-//                .permitAll();
-
     }
+
 
     //DAO
     @Bean
@@ -67,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         return provider;
     }
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception { //используется для установки способа аутентификации, особенно если их несколько

@@ -1,10 +1,9 @@
 console.log("List of users loaded");
 
 document.addEventListener("DOMContentLoaded", () => {
-    window.loadUsers(); // вызываем через window (но можно и просто loadUsers())
+    window.loadUsers();
 });
 
-// Делаем функции глобально доступными
 window.loadUsers = function () {
     fetch('/api/admin/users')
         .then(response => {
@@ -36,11 +35,11 @@ window.renderUsersTable = function (users) {
         `;
 
         row.querySelector(".btn-info").addEventListener("click", () => {
-            openEditModal(user);
+            window.openEditModal(user);
         });
 
         row.querySelector(".btn-danger").addEventListener("click", () => {
-            openDeleteModal(user);
+            window.openDeleteModal(user);
         });
 
         usersTableBody.appendChild(row);

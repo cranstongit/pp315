@@ -1,11 +1,17 @@
 package ru.kata.spring.boot_security.demo.dto;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class NewUserDto {
+public class EditUserDto {
+
+    @NotNull(message = "id should not be null")
+    @Min(value = 1, message = "id must be greater than 0")
+    private Long id;
 
     @NotEmpty(message = "Name should not be empty")
     private String firstName;
@@ -25,6 +31,10 @@ public class NewUserDto {
 
     private List<Long> roleIds;
 
+
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
 
     public String getFirstName() {
         return firstName;

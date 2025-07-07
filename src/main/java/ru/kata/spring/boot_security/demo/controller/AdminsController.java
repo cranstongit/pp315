@@ -7,16 +7,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.dto.EditUserDto;
 import ru.kata.spring.boot_security.demo.dto.NewUserDto;
-import ru.kata.spring.boot_security.demo.dto.ResponceUserDto;
+import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotUpdatedException;
@@ -54,7 +53,7 @@ public class AdminsController {
 
     @GetMapping("me")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponceUserDto> getAdminInfo(Principal principal) {
+    public ResponseEntity<ResponseUserDto> getAdminInfo(Principal principal) {
 
         User user = userService.findByUsername(principal.getName());
 
@@ -62,7 +61,7 @@ public class AdminsController {
             throw new UserNotFoundException("User with the username " + principal.getName() + " not found in the DB");
         }
 
-        return ResponseEntity.ok(convertToResponceUserDto(user));
+        return ResponseEntity.ok(convertToResponseUserDto(user));
     }
 
 
@@ -112,8 +111,8 @@ public class AdminsController {
 
     @PatchMapping("edit")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> createUser(@Valid @RequestBody NewUserDto newUserDto,
-                                                 BindingResult bindingResult, @RequestParam long id) {
+    public ResponseEntity<String> updateUser(@Valid @RequestBody EditUserDto editUserDto,
+                                                 BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             StringBuilder sb = new StringBuilder();
@@ -126,31 +125,18 @@ public class AdminsController {
             throw new UserNotUpdatedException(sb.toString());
         }
 
+        User user = convertToEditUserDto(editUserDto);
+
         try {
-            userService.update(id, convertToNewUserDto(newUserDto));
+            userService.update(user.getId(), user);
             return ResponseEntity.noContent().build(); // 204 No Content
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Пользователь c " + id + " не найден: " + e.getMessage());
+                    .body("Пользователь c " + editUserDto.getId() + " не найден: " + e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ошибка изменения пользователя с " + id + ". Ошибка: " + e.getMessage());
+                    .body("Ошибка изменения пользователя с " + editUserDto.getId() + ". Ошибка: " + e.getMessage());
         }
-    }
-
-
-    @GetMapping("/error")
-    public ModelAndView showError(@RequestParam(name = "errorMessage", required = false) String errorMessage) {
-
-        ModelAndView mavError = new ModelAndView("error");
-
-        if (errorMessage != null) {
-            mavError.addObject("errorMessage", errorMessage);  // добавляем параметр в модель
-        } else {
-            mavError.addObject("errorMessage", "Something went wrong");
-        }
-
-        return mavError;
     }
 
 
@@ -168,17 +154,31 @@ public class AdminsController {
         return user;
     }
 
-    public ResponceUserDto convertToResponceUserDto(User user) {
-        ResponceUserDto responceUserDto = new ResponceUserDto();
+    public User convertToEditUserDto(EditUserDto editUserDto) {
+        User user = new User();
 
-        responceUserDto.setId(user.getId());
-        responceUserDto.setFirstName(user.getFirstName());
-        responceUserDto.setLastName(user.getLastName());
-        responceUserDto.setEmail(user.getEmail());
-        responceUserDto.setUsername(user.getUsername());
-        responceUserDto.setRoles(user.getRoles());
+        user.setId(editUserDto.getId());
+        user.setUsername(editUserDto.getUsername());
+        user.setFirstName(editUserDto.getFirstName());
+        user.setLastName(editUserDto.getLastName());
+        user.setEmail(editUserDto.getEmail());
+        user.setPassword(editUserDto.getPassword());
+        user.setRoleIds(editUserDto.getRoleIds());
 
-        return responceUserDto;
+        return user;
+    }
+
+    public ResponseUserDto convertToResponseUserDto(User user) {
+        ResponseUserDto responseUserDto = new ResponseUserDto();
+
+        responseUserDto.setId(user.getId());
+        responseUserDto.setFirstName(user.getFirstName());
+        responseUserDto.setLastName(user.getLastName());
+        responseUserDto.setEmail(user.getEmail());
+        responseUserDto.setUsername(user.getUsername());
+        responseUserDto.setRoles(user.getRoles());
+
+        return responseUserDto;
     }
 
 }

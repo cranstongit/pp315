@@ -4,7 +4,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 
 import java.util.Set;
 
-public class ResponceUserDto {
+public class ResponseUserDto {
 
     private Long id;
 
@@ -17,7 +17,6 @@ public class ResponceUserDto {
     private String username;
 
     private Set<Role> roles;
-
 
 
     public Long getId() { return id; }

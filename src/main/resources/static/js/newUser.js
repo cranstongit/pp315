@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                [csrfHeader]: csrfToken // <--- ВАЖНО!
+                [csrfHeader]: csrfToken
             },
             credentials: "same-origin",
             body: JSON.stringify(userDto)
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadRolesForNewUser() {
-    fetch("/api/admin/roles") // сделай такой endpoint в контроллере
+    fetch("/api/admin/roles")
         .then(response => response.json())
         .then(roles => {
             const select = document.getElementById("roleIdsNew");

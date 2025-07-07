@@ -1,30 +1,23 @@
-console.log("edit User loaded")
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadRolesForEdit();
-    document.getElementById("editUserForm").addEventListener("submit", handleEditSubmit);
-});
+console.log("editUser.js loaded");
 
 let allRoles = [];
 
-function loadRolesForEdit() {
+document.addEventListener("DOMContentLoaded", () => {
     fetch("/api/admin/roles")
         .then(res => res.json())
-        .then(data => {
-            allRoles = data;
-        })
+        .then(data => allRoles = data)
         .catch(err => console.error("Ошибка загрузки ролей:", err));
-}
+
+    document.getElementById("editUserForm").addEventListener("submit", handleEditSubmit);
+});
 
 window.openEditModal = function (user) {
-    const modal = $("#editUserModal");
-
     document.getElementById("editId").value = user.id;
     document.getElementById("editFirstName").value = user.firstName;
     document.getElementById("editLastName").value = user.lastName;
     document.getElementById("editEmail").value = user.email;
     document.getElementById("editUsername").value = user.username;
-    document.getElementById("editPassword").value = user.password;
+    document.getElementById("editPassword").value = user.password || "";
 
     const roleSelect = document.getElementById("editRoleIds");
     roleSelect.innerHTML = "";
@@ -39,25 +32,15 @@ window.openEditModal = function (user) {
         roleSelect.appendChild(option);
     });
 
-    modal.modal("show");
+    $('#editUserModal').modal('show');
 };
-
-function openEditModal(user) {
-    const modalContainer = document.getElementById("modalContainer");
-    modalContainer.innerHTML = generateEditModalHTML(user); // вставили модалку
-    $('#editUserModal').modal('show'); // показали модалку
-
-    // Теперь, когда форма есть — вешаем обработчик
-    document.getElementById("editUserForm").addEventListener("submit", handleEditSubmit);
-}
 
 function handleEditSubmit(event) {
     event.preventDefault();
 
     const form = event.target;
-    const userId = form.editId.value;
     const formData = {
-        id: userId,
+        id: form.editId.value,
         firstName: form.editFirstName.value,
         lastName: form.editLastName.value,
         email: form.editEmail.value,
@@ -75,12 +58,22 @@ function handleEditSubmit(event) {
         body: JSON.stringify(formData)
     })
         .then(res => {
-            if (!res.ok) throw new Error("Ошибка при обновлении");
-            return res.json();
+            if (!res.ok) {
+                return res.text().then(errorMessage => {
+                    throw new Error(`Ошибка сервера: ${errorMessage}`);
+                });
+            }
+
+            if (res.status === 204) return null;  // если 204 — тело пустое
+
+            return res.json(); // если тело есть
         })
         .then(() => {
             $("#editUserModal").modal("hide");
             window.loadUsers();
         })
-        .catch(err => console.error("Ошибка:", err));
+        .catch(err => {
+            console.error("Ошибка при сохранении изменений:", err);
+            alert("Ошибка при сохранении пользователя: " + err.message);
+        });
 }
