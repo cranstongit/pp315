@@ -5,7 +5,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
+import ru.kata.spring.boot_security.demo.dto.EditUserDto;
+import ru.kata.spring.boot_security.demo.dto.NewUserDto;
+import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
@@ -15,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -98,14 +104,14 @@ public class UserServiceImpl implements UserService {
 
 
    @Override
-   public List<User> findAll() {
-      return userDao.findAll();
+   public Optional<List<User>> findAll() {
+      return Optional.ofNullable(userDao.findAll());
    }
 
 
    @Override
-   public User findByUsername(String username) {
-      return userDao.findByUsername(username);
+   public Optional<User> findByUsername(String username) {
+      return Optional.ofNullable(userDao.findByUsername(username));
    }
 
 
@@ -124,6 +130,60 @@ public class UserServiceImpl implements UserService {
 
    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
       return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+   }
+
+
+   //DTO methods
+   public User convertToNewUserDto(NewUserDto newUserDto) {
+      User user = new User();
+
+      user.setUsername(newUserDto.getUsername());
+      user.setFirstName(newUserDto.getFirstName());
+      user.setLastName(newUserDto.getLastName());
+      user.setEmail(newUserDto.getEmail());
+      user.setPassword(newUserDto.getPassword());
+      user.setRoleIds(newUserDto.getRoleIds());
+
+      return user;
+   }
+
+   public User convertToEditUserDto(EditUserDto editUserDto) {
+      User user = new User();
+
+      user.setId(editUserDto.getId());
+      user.setUsername(editUserDto.getUsername());
+      user.setFirstName(editUserDto.getFirstName());
+      user.setLastName(editUserDto.getLastName());
+      user.setEmail(editUserDto.getEmail());
+      user.setPassword(editUserDto.getPassword());
+      user.setRoleIds(editUserDto.getRoleIds());
+
+      return user;
+   }
+
+   public ResponseUserDto convertToResponseUserDto(User user) {
+      ResponseUserDto responseUserDto = new ResponseUserDto();
+
+      responseUserDto.setId(user.getId());
+      responseUserDto.setFirstName(user.getFirstName());
+      responseUserDto.setLastName(user.getLastName());
+      responseUserDto.setEmail(user.getEmail());
+      responseUserDto.setUsername(user.getUsername());
+      responseUserDto.setRoles(user.getRoles());
+
+      return responseUserDto;
+   }
+
+   public String bindingResultInfo(BindingResult bindingResult) {
+      StringBuilder sb = new StringBuilder();
+
+      List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+      for (FieldError fe : fieldErrors) {
+         sb.append(fe.getField())
+                 .append(" - ").append(fe.getDefaultMessage())
+                 .append(";");
+      }
+      return sb.toString();
    }
 
 }

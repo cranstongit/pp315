@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/user")
@@ -21,21 +22,20 @@ public class UsersController {
     }
 
 
-    @GetMapping({""})
+    @GetMapping("")
     public ModelAndView visitUserPage(Principal principal) {
 
-        User user = userService.findByUsername(principal.getName()); //получаем данные юзера
-
-        ModelAndView mavUser = new ModelAndView("user"); //создаем мав
-        mavUser.addObject("user", user); //добавляем пользователя в мав
-
-        if (user == null || principal.getName() == null) { //проверка на null
-            ModelAndView mavError = new ModelAndView("error");
-            mavError.addObject("errorMessage", "Данные пользователя отсутствуют в БД.");
-            return mavError;
+        if (principal == null || principal.getName() == null) {
+            return new ModelAndView("error", "errorMessage", "Проблема с аутентификацией.");
         }
 
-        return mavUser;
+        Optional<User> user = userService.findByUsername(principal.getName());
+
+        if (user.isEmpty()) {
+            return new ModelAndView("error", "errorMessage", "Данные пользователя отсутствуют в БД.");
+        }
+
+        return new ModelAndView("mavUser", "user", user.get());
     }
 
 

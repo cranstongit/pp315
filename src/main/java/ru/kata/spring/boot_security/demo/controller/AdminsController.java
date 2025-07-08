@@ -28,7 +28,9 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -46,8 +48,9 @@ public class AdminsController {
     @GetMapping({"users"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUserList() {
+        List<User> users = userService.findAll().orElse(Collections.emptyList());
 
-        return ResponseEntity.ok(userService.findAll());
+        return ResponseEntity.ok(users);
     }
 
 
@@ -55,13 +58,13 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseUserDto> getAdminInfo(Principal principal) {
 
-        User user = userService.findByUsername(principal.getName());
+        Optional<User> user = userService.findByUsername(principal.getName());
 
-        if (user == null) {
+        if (user.isEmpty()) {
             throw new UserNotFoundException("User with the username " + principal.getName() + " not found in the DB");
         }
 
-        return ResponseEntity.ok(convertToResponseUserDto(user));
+        return ResponseEntity.ok(userService.convertToResponseUserDto(user.get()));
     }
 
 
@@ -71,17 +74,10 @@ public class AdminsController {
                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            StringBuilder sb = new StringBuilder();
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for (FieldError fe : fieldErrors) {
-                sb.append(fe.getField())
-                        .append(" - ").append(fe.getDefaultMessage())
-                        .append(";");
-            }
-            throw new UserNotCreatedException(sb.toString());
+            throw new UserNotCreatedException(userService.bindingResultInfo(bindingResult));
         }
 
-        userService.save(convertToNewUserDto(newUserDto));
+        userService.save(userService.convertToNewUserDto(newUserDto));
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -115,17 +111,10 @@ public class AdminsController {
                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            StringBuilder sb = new StringBuilder();
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for (FieldError fe : fieldErrors) {
-                sb.append(fe.getField())
-                        .append(" - ").append(fe.getDefaultMessage())
-                        .append(";");
-            }
-            throw new UserNotUpdatedException(sb.toString());
+            throw new UserNotUpdatedException(userService.bindingResultInfo(bindingResult));
         }
 
-        User user = convertToEditUserDto(editUserDto);
+        User user = userService.convertToEditUserDto(editUserDto);
 
         try {
             userService.update(user.getId(), user);
@@ -140,45 +129,12 @@ public class AdminsController {
     }
 
 
-    //DTO methods
-    public User convertToNewUserDto(NewUserDto newUserDto) {
-        User user = new User();
-
-        user.setUsername(newUserDto.getUsername());
-        user.setFirstName(newUserDto.getFirstName());
-        user.setLastName(newUserDto.getLastName());
-        user.setEmail(newUserDto.getEmail());
-        user.setPassword(newUserDto.getPassword());
-        user.setRoleIds(newUserDto.getRoleIds());
-
-        return user;
-    }
-
-    public User convertToEditUserDto(EditUserDto editUserDto) {
-        User user = new User();
-
-        user.setId(editUserDto.getId());
-        user.setUsername(editUserDto.getUsername());
-        user.setFirstName(editUserDto.getFirstName());
-        user.setLastName(editUserDto.getLastName());
-        user.setEmail(editUserDto.getEmail());
-        user.setPassword(editUserDto.getPassword());
-        user.setRoleIds(editUserDto.getRoleIds());
-
-        return user;
-    }
-
-    public ResponseUserDto convertToResponseUserDto(User user) {
-        ResponseUserDto responseUserDto = new ResponseUserDto();
-
-        responseUserDto.setId(user.getId());
-        responseUserDto.setFirstName(user.getFirstName());
-        responseUserDto.setLastName(user.getLastName());
-        responseUserDto.setEmail(user.getEmail());
-        responseUserDto.setUsername(user.getUsername());
-        responseUserDto.setRoles(user.getRoles());
-
-        return responseUserDto;
-    }
+//    public ResponseEntity<User(можно поменят на дто)> updateUser(@RequestBody User user) {
+//        if (!userService.isUserExist(user.getId())){
+//            return ResponseEntity.notFound().build();
+//        }
+//        userService.updateUser(user);
+//        return ResponseEntity.ok().body(user);
+//    }
 
 }
