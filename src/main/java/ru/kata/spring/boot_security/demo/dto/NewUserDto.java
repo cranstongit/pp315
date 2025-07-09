@@ -34,6 +34,7 @@ public class NewUserDto {
         this.firstName = firstName;
     }
 
+
     public String getLastName() {
         return lastName;
     }
@@ -41,6 +42,7 @@ public class NewUserDto {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
 
     public String getEmail() {
         return email;
@@ -50,6 +52,7 @@ public class NewUserDto {
         this.email = email;
     }
 
+
     public String getUsername() {
         return username;
     }
@@ -58,6 +61,7 @@ public class NewUserDto {
         this.username = username;
     }
 
+
     public String getPassword() {
         return password;
     }
@@ -65,6 +69,7 @@ public class NewUserDto {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
     public List<Long> getRoleIds() {
         return roleIds;

@@ -107,5 +107,5 @@ function renderAdminInfo(admin) {
 
 function showElementById(id) {
     const el = document.getElementById(id);
-    if (el) el.style.display = "flex"; // для navbar лучше "flex"
+    if (el) el.style.display = "flex";
 }

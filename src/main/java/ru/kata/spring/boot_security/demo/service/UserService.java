@@ -16,8 +16,8 @@ public interface UserService extends UserDetailsService {
     void delete(long id);
     Optional<List<User>> findAll();
     Optional<User> findByUsername(String username);
-    User convertToNewUserDto(NewUserDto newUserDto);
-    User convertToEditUserDto(EditUserDto editUserDto);
+    User convertNewUserDtoToUser(NewUserDto newUserDto);
+    User convertEditUserDtoToUser(EditUserDto editUserDto);
     ResponseUserDto convertToResponseUserDto(User user);
     String bindingResultInfo(BindingResult bindingResult);
 }

@@ -68,9 +68,9 @@ function handleEditSubmit(event) {
 
             return res.json(); // если тело есть
         })
-        .then(() => {
+        .then(updatedUser => {
             $("#editUserModal").modal("hide");
-            window.loadUsers();
+            window.updateUserInTable(updatedUser);  // заменяем строку таблицы новым пользователем
         })
         .catch(err => {
             console.error("Ошибка при сохранении изменений:", err);

@@ -14,13 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -61,29 +59,15 @@ public class User implements UserDetails {
 
    private Set<Role> roles;
 
-   @Transient
-   private List<Long> roleIds;
-
 
    public User() {}
-
-//   public User(String username, String password, String firstName, String lastName, String email, Set<Role> roles) {
-//      this.username = username;
-//      this.password = password;
-//      this.firstName = firstName;
-//      this.lastName = lastName;
-//      this.email = email;
-//      this.roles = roles;
-//   }
 
 
    public Long getId() {
       return id;
    }
 
-   public void setId(Long id) {
-      this.id = id;
-   }
+   public void setId(Long id) { this.id = id; }
 
 
    public String getFirstName() {
@@ -117,32 +101,21 @@ public class User implements UserDetails {
       return username;
    }
 
-   public void setUsername(String username) {
-      this.username = username;
-   }
+   public void setUsername(String username) { this.username = username; }
 
 
    public String getPassword() {
       return password;
    }
 
-   public void setPassword(String password) {
-      this.password = password;
-   }
+   public void setPassword(String password) { this.password = password; }
 
 
    public Set<Role> getRoles() {
       return roles;
    }
 
-   public void setRoles(Set<Role> roles) {
-      this.roles = roles;
-   }
-
-
-   public List<Long> getRoleIds() { return roleIds; }
-
-   public void setRoleIds(List<Long> roleIds) { this.roleIds = roleIds; }
+   public void setRoles(Set<Role> roles) { this.roles = roles; }
 
 
    @Override

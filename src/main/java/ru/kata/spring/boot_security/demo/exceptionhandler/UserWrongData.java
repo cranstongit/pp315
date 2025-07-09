@@ -1,7 +1,7 @@
 package ru.kata.spring.boot_security.demo.exceptionhandler;
 
 public class UserWrongData {
-    String message;
+    final String message;
 
     public UserWrongData(String message) {
         this.message = message;
@@ -11,7 +11,7 @@ public class UserWrongData {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+//    public void setMessage(String message) {
+//        this.message = message;
+//    }
 }

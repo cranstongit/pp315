@@ -11,6 +11,8 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.dto.EditUserDto;
 import ru.kata.spring.boot_security.demo.dto.NewUserDto;
 import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
+import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
+import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotUpdatedException;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
@@ -39,24 +41,55 @@ public class UserServiceImpl implements UserService {
    }
 
 
+   public User convertNewUserDtoToUser(NewUserDto newUserDto) {
+      if (newUserDto.getRoleIds() == null || newUserDto.getRoleIds().isEmpty()) {
+         throw new UserNotCreatedException("Не выбрана ни одна роль.");
+      }
+
+      Set<Role> roles = roleService.findByIds(newUserDto.getRoleIds());
+      if (roles.isEmpty()) {
+         throw new UserNotCreatedException("Указанные роли не найдены.");
+      }
+
+      User user = new User();
+      user.setUsername(newUserDto.getUsername());
+      user.setFirstName(newUserDto.getFirstName());
+      user.setLastName(newUserDto.getLastName());
+      user.setEmail(newUserDto.getEmail());
+      user.setPassword(passwordEncoder.encode(newUserDto.getPassword()));
+      user.setRoles(roles);
+
+      return user;
+   }
+
+
    @Transactional
    @Override
    public void save(User user) {
-
-      if (user.getRoleIds() == null || user.getRoleIds().isEmpty()) {
-         throw new IllegalArgumentException("Не выбрана ни одна роль.");
-      }
-
-      Set<Role> roles = roleService.findByIds(user.getRoleIds());
-
-      if (roles == null || roles.isEmpty()) {
-         throw new IllegalArgumentException("Указанные роли не найдены.");
-      }
-
-      user.setRoles(roles);
-      user.setPassword(passwordEncoder.encode(user.getPassword()));
-
       userDao.save(user);
+   }
+
+
+   public User convertEditUserDtoToUser(EditUserDto editUserDto) {
+      if (editUserDto.getRoleIds() == null || editUserDto.getRoleIds().isEmpty()) {
+         throw new UserNotUpdatedException("Не выбрана ни одна роль.");
+      }
+
+      Set<Role> roles = roleService.findByIds(editUserDto.getRoleIds());
+      if (roles.isEmpty()) {
+         throw new UserNotUpdatedException("Указанные роли не найдены.");
+      }
+
+      User user = new User();
+      user.setId(editUserDto.getId());
+      user.setFirstName(editUserDto.getFirstName());
+      user.setLastName(editUserDto.getLastName());
+      user.setEmail(editUserDto.getEmail());
+      user.setUsername(editUserDto.getUsername());
+      user.setPassword(editUserDto.getPassword());
+      user.setRoles(roles);
+
+      return user;
    }
 
 
@@ -76,10 +109,6 @@ public class UserServiceImpl implements UserService {
       } else {
          user.setPassword(existingUser.getPassword());
       }
-
-      Set<Role> roles = roleService.findByIds(user.getRoleIds());
-      user.setRoles(roles);
-      user.setId(id);
 
       try {
          userDao.merge(user);
@@ -132,34 +161,6 @@ public class UserServiceImpl implements UserService {
       return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
    }
 
-
-   //DTO methods
-   public User convertToNewUserDto(NewUserDto newUserDto) {
-      User user = new User();
-
-      user.setUsername(newUserDto.getUsername());
-      user.setFirstName(newUserDto.getFirstName());
-      user.setLastName(newUserDto.getLastName());
-      user.setEmail(newUserDto.getEmail());
-      user.setPassword(newUserDto.getPassword());
-      user.setRoleIds(newUserDto.getRoleIds());
-
-      return user;
-   }
-
-   public User convertToEditUserDto(EditUserDto editUserDto) {
-      User user = new User();
-
-      user.setId(editUserDto.getId());
-      user.setUsername(editUserDto.getUsername());
-      user.setFirstName(editUserDto.getFirstName());
-      user.setLastName(editUserDto.getLastName());
-      user.setEmail(editUserDto.getEmail());
-      user.setPassword(editUserDto.getPassword());
-      user.setRoleIds(editUserDto.getRoleIds());
-
-      return user;
-   }
 
    public ResponseUserDto convertToResponseUserDto(User user) {
       ResponseUserDto responseUserDto = new ResponseUserDto();

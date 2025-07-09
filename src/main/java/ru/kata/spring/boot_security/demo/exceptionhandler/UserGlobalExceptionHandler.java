@@ -8,27 +8,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class UserGlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<UserWrongData> handleException(UserNotFoundException e) {
-        UserWrongData uwd = new UserWrongData(e.getMessage());
-        return new ResponseEntity<>(uwd, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new UserWrongData(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(UserNotCreatedException.class)
     public ResponseEntity<UserWrongData> handleException(UserNotCreatedException e) {
-        UserWrongData uwd = new UserWrongData(e.getMessage());
-        return new ResponseEntity<>(uwd, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new UserWrongData(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(UserNotUpdatedException.class)
     public ResponseEntity<UserWrongData> handleException(UserNotUpdatedException e) {
-        UserWrongData uwd = new UserWrongData(e.getMessage());
-        return new ResponseEntity<>(uwd, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new UserWrongData(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<UserWrongData> handleException(Exception e) {
-        UserWrongData uwd = new UserWrongData(e.getMessage());
-        return new ResponseEntity<>(uwd, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new UserWrongData(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

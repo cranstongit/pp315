@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -70,24 +69,31 @@ public class AdminsController {
 
     @PostMapping("newuser")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<HttpStatus> createUser(@Valid @RequestBody NewUserDto newUserDto,
+    public ResponseEntity<ResponseUserDto> createUser(@Valid @RequestBody NewUserDto newUserDto,
                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new UserNotCreatedException(userService.bindingResultInfo(bindingResult));
         }
 
-        userService.save(userService.convertToNewUserDto(newUserDto));
-
-        return ResponseEntity.ok(HttpStatus.OK);
+        User user = userService.convertNewUserDtoToUser(newUserDto);
+        userService.save(user);
+        return ResponseEntity.ok().body(userService.convertToResponseUserDto(user));
     }
 
 
-    @GetMapping("roles")
+    @PatchMapping("edit")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<Role>> getAllRoles() {
+    public ResponseEntity<ResponseUserDto> updateUser(@Valid @RequestBody EditUserDto editUserDto,
+                                           BindingResult bindingResult) {
 
-        return ResponseEntity.ok(new ArrayList<>(roleService.findAll()));
+        if (bindingResult.hasErrors()) {
+            throw new UserNotUpdatedException(userService.bindingResultInfo(bindingResult));
+        }
+
+        User user = userService.convertEditUserDtoToUser(editUserDto);
+        userService.update(user.getId(), user);
+        return ResponseEntity.ok().body(userService.convertToResponseUserDto(user));
     }
 
 
@@ -105,36 +111,11 @@ public class AdminsController {
     }
 
 
-    @PatchMapping("edit")
+    @GetMapping("roles")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> updateUser(@Valid @RequestBody EditUserDto editUserDto,
-                                                 BindingResult bindingResult) {
+    public ResponseEntity<List<Role>> getAllRoles() {
 
-        if (bindingResult.hasErrors()) {
-            throw new UserNotUpdatedException(userService.bindingResultInfo(bindingResult));
-        }
-
-        User user = userService.convertToEditUserDto(editUserDto);
-
-        try {
-            userService.update(user.getId(), user);
-            return ResponseEntity.noContent().build(); // 204 No Content
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Пользователь c " + editUserDto.getId() + " не найден: " + e.getMessage());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ошибка изменения пользователя с " + editUserDto.getId() + ". Ошибка: " + e.getMessage());
-        }
+        return ResponseEntity.ok(new ArrayList<>(roleService.findAll()));
     }
-
-
-//    public ResponseEntity<User(можно поменят на дто)> updateUser(@RequestBody User user) {
-//        if (!userService.isUserExist(user.getId())){
-//            return ResponseEntity.notFound().build();
-//        }
-//        userService.updateUser(user);
-//        return ResponseEntity.ok().body(user);
-//    }
 
 }
