@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -13,7 +12,6 @@ public class EditUserDto {
     @Min(value = 1, message = "id must be greater than 0")
     private Long id;
 
-    @NotEmpty(message = "Name should not be empty")
     private String firstName;
 
     private String lastName;
@@ -21,14 +19,12 @@ public class EditUserDto {
     @Email
     private String email;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 100, message = "must be between 2 and 100")
     private String username;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 100, message = "must be between 2 and 100")
     private String password;
 
+    @NotNull(message = "roleIds should not be null")
+    @Size(min = 1, message = "At least one role must be selected")
     private List<Long> roleIds;
 
 

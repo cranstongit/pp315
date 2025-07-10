@@ -71,6 +71,11 @@ public class UserServiceImpl implements UserService {
 
 
    public User convertEditUserDtoToUser(EditUserDto editUserDto) {
+      User existingUser = userDao.find(editUserDto.getId());
+      if (existingUser == null) {
+         throw new EntityNotFoundException("User with id " + existingUser.getId() + " not found");
+      }
+
       if (editUserDto.getRoleIds() == null || editUserDto.getRoleIds().isEmpty()) {
          throw new UserNotUpdatedException("Не выбрана ни одна роль.");
       }
@@ -80,36 +85,22 @@ public class UserServiceImpl implements UserService {
          throw new UserNotUpdatedException("Указанные роли не найдены.");
       }
 
-      User user = new User();
-      user.setId(editUserDto.getId());
-      user.setFirstName(editUserDto.getFirstName());
-      user.setLastName(editUserDto.getLastName());
-      user.setEmail(editUserDto.getEmail());
-      user.setUsername(editUserDto.getUsername());
-      user.setPassword(editUserDto.getPassword());
-      user.setRoles(roles);
+      existingUser.setFirstName(editUserDto.getFirstName());
+      existingUser.setLastName(editUserDto.getLastName());
+      existingUser.setEmail(editUserDto.getEmail());
+      existingUser.setUsername(editUserDto.getUsername());
+      existingUser.setRoles(roles);
+      if (editUserDto.getPassword() != null && !editUserDto.getPassword().isBlank()) {
+         existingUser.setPassword(passwordEncoder.encode(editUserDto.getPassword()));
+      }
 
-      return user;
+      return existingUser;
    }
 
 
    @Transactional
    @Override
    public void update(long id, User user) {
-
-      User existingUser = userDao.find(id);
-
-      if (existingUser == null) {
-         throw new EntityNotFoundException("User with id " + id + " not found");
-      }
-
-      if (user.getPassword() != null && !user.getPassword().isBlank()
-              && !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-         user.setPassword(passwordEncoder.encode(user.getPassword()));
-      } else {
-         user.setPassword(existingUser.getPassword());
-      }
-
       try {
          userDao.merge(user);
       } catch (RuntimeException e) {

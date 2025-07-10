@@ -17,7 +17,7 @@ window.openEditModal = function (user) {
     document.getElementById("editLastName").value = user.lastName;
     document.getElementById("editEmail").value = user.email;
     document.getElementById("editUsername").value = user.username;
-    document.getElementById("editPassword").value = user.password || "";
+    document.getElementById("editPassword").value = "";
 
     const roleSelect = document.getElementById("editRoleIds");
     roleSelect.innerHTML = "";

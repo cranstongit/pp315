@@ -9,8 +9,7 @@ function openDeleteModal(user) {
     document.getElementById("deleteUsername").value = user.username;
     document.getElementById("deleteRoles").value = user.roles.map(r => r.roleName).join(", ");
 
-    // Показываем модалку
-    $('#deleteUserModal').modal('show');
+    $('#deleteUserModal').modal('show'); // Показываем модалку
 }
 
 document.getElementById("deleteUserForm").addEventListener("submit", function (e) {

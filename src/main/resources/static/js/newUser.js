@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(text); });
                 }
-                return response.json(); // ⬅️ получаем ResponseUserDto
+                return response.json(); // получаем ResponseUserDto
             })
             .then(newUser => {
                 form.reset();
-                window.addUserToTable(newUser); // ⬅️ добавляем нового юзера в таблицу
+                window.addUserToTable(newUser); // добавляем нового юзера в таблицу
             })
             .catch(error => {
                 console.error("Ошибка создания пользователя:", error);
