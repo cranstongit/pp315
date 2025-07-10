@@ -11,6 +11,12 @@
             <div>
                 <p th:text="'Error message: ' + ${errorMessage}">Error message</p>
             </div>
+            <br/>
+            <br/>
+            <form th:action="@{/logout}" method="post" class="form-inline"> <!-- ссылка Logout с пост запросом -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-link nav-link" style="color: gray; padding: 0;">Logout</button>
+            </form>
         </div>
     </body>
 </html>

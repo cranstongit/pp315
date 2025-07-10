@@ -35,11 +35,11 @@ public class UsersController {
             return new ModelAndView("error", "errorMessage", "Данные пользователя отсутствуют в БД.");
         }
 
-        return new ModelAndView("user", "user", user.get());
+        return new ModelAndView("user1", "user", user.get());
     }
 
 
-    @GetMapping("/error")
+    @GetMapping("error")
     public ModelAndView showError(@RequestParam(name = "errorMessage", required = false) String errorMessage) {
 
         ModelAndView mavError = new ModelAndView("error");
