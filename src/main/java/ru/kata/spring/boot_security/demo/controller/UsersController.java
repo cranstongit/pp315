@@ -22,7 +22,7 @@ public class UsersController {
     }
 
 
-    @GetMapping("")
+    @GetMapping
     public ModelAndView visitUserPage(Principal principal) {
 
         if (principal == null || principal.getName() == null) {
@@ -35,7 +35,7 @@ public class UsersController {
             return new ModelAndView("error", "errorMessage", "Данные пользователя отсутствуют в БД.");
         }
 
-        return new ModelAndView("user1", "user", user.get());
+        return new ModelAndView("user", "user", user.get());
     }
 
 

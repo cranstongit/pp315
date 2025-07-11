@@ -18,6 +18,7 @@ import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotUpdatedException;
+import ru.kata.spring.boot_security.demo.mapper.UserMapper;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
@@ -33,14 +34,16 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminsController {
+public class AdminsRestController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final UserMapper userMapper;
 
-    public AdminsController(UserService userService, RoleService roleService) {
+    public AdminsRestController(UserService userService, RoleService roleService, UserMapper userMapper) {
         this.userService = userService;
         this.roleService = roleService;
+        this.userMapper = userMapper;
     }
 
 
@@ -63,7 +66,7 @@ public class AdminsController {
             throw new UserNotFoundException("User with the username " + principal.getName() + " not found in the DB");
         }
 
-        return ResponseEntity.ok(userService.convertToResponseUserDto(user.get()));
+        return ResponseEntity.ok(userMapper.toEntity(user.get()));
     }
 
 
@@ -76,9 +79,7 @@ public class AdminsController {
             throw new UserNotCreatedException(userService.bindingResultInfo(bindingResult));
         }
 
-        User user = userService.convertNewUserDtoToUser(newUserDto);
-        userService.save(user);
-        return ResponseEntity.ok().body(userService.convertToResponseUserDto(user));
+        return ResponseEntity.ok().body(userMapper.saveAndReturn(newUserDto));
     }
 
 
@@ -91,9 +92,7 @@ public class AdminsController {
             throw new UserNotUpdatedException(userService.bindingResultInfo(bindingResult));
         }
 
-        User user = userService.convertEditUserDtoToUser(editUserDto);
-        userService.update(user.getId(), user);
-        return ResponseEntity.ok().body(userService.convertToResponseUserDto(user));
+        return ResponseEntity.ok().body(userMapper.saveAndReturn(editUserDto));
     }
 
 

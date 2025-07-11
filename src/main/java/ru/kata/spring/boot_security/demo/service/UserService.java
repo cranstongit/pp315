@@ -2,9 +2,6 @@ package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.BindingResult;
-import ru.kata.spring.boot_security.demo.dto.EditUserDto;
-import ru.kata.spring.boot_security.demo.dto.NewUserDto;
-import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
@@ -16,8 +13,5 @@ public interface UserService extends UserDetailsService {
     void delete(long id);
     Optional<List<User>> findAll();
     Optional<User> findByUsername(String username);
-    User convertNewUserDtoToUser(NewUserDto newUserDto);
-    User convertEditUserDtoToUser(EditUserDto editUserDto);
-    ResponseUserDto convertToResponseUserDto(User user);
     String bindingResultInfo(BindingResult bindingResult);
 }
