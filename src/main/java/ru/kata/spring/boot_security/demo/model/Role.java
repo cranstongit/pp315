@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
@@ -10,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "roles_table")
 public class Role implements GrantedAuthority {
@@ -25,24 +29,6 @@ public class Role implements GrantedAuthority {
     public Role() {}
 
     public Role(String roleName) {
-        this.roleName = roleName;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
 
@@ -70,5 +56,4 @@ public class Role implements GrantedAuthority {
     public String toString() {
         return "role name: " + roleName;
     }
-
 }

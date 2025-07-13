@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.kata.spring.boot_security.demo.dto.EditUserDto;
-import ru.kata.spring.boot_security.demo.dto.NewUserDto;
-import ru.kata.spring.boot_security.demo.dto.ResponseUserDto;
+import ru.kata.spring.boot_security.demo.dto.EditDto;
+import ru.kata.spring.boot_security.demo.dto.NewDto;
+import ru.kata.spring.boot_security.demo.dto.ResponseDto;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotCreatedException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotFoundException;
 import ru.kata.spring.boot_security.demo.exceptionhandler.UserNotUpdatedException;
 import ru.kata.spring.boot_security.demo.mapper.UserMapper;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.RoleService;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.dto.DtoService;
+import ru.kata.spring.boot_security.demo.service.entity.RoleService;
+import ru.kata.spring.boot_security.demo.service.entity.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
@@ -38,61 +39,59 @@ public class AdminsRestController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final UserMapper userMapper;
+    private final DtoService dtoService;
 
-    public AdminsRestController(UserService userService, RoleService roleService, UserMapper userMapper) {
+    public AdminsRestController(UserService userService, RoleService roleService, UserMapper userMapper, DtoService dtoService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.userMapper = userMapper;
+        this.dtoService = dtoService;
     }
 
 
     @GetMapping({"users"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUserList() {
-        List<User> users = userService.findAll().orElse(Collections.emptyList());
-
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.findAll().orElse(Collections.emptyList()));
     }
 
 
     @GetMapping("me")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponseUserDto> getAdminInfo(Principal principal) {
+    public ResponseEntity<ResponseDto> getAdminInfo(Principal principal) {
 
-        Optional<User> user = userService.findByUsername(principal.getName());
+        Optional<User> optionalUser = userService.findByUsername(principal.getName());
 
-        if (user.isEmpty()) {
+        if (optionalUser.isEmpty()) {
             throw new UserNotFoundException("User with the username " + principal.getName() + " not found in the DB");
         }
 
-        return ResponseEntity.ok(userMapper.toEntity(user.get()));
+        return ResponseEntity.ok(dtoService.buildResponseDto(optionalUser.get()));
     }
 
 
     @PostMapping("newuser")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponseUserDto> createUser(@Valid @RequestBody NewUserDto newUserDto,
-                                                 BindingResult bindingResult) {
+    public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody NewDto newDto,
+                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new UserNotCreatedException(userService.bindingResultInfo(bindingResult));
+            throw new UserNotCreatedException(dtoService.bindingResultInfo(bindingResult));
         }
 
-        return ResponseEntity.ok().body(userMapper.saveAndReturn(newUserDto));
+        return ResponseEntity.ok().body(dtoService.saveAndReturn(newDto));
     }
 
 
     @PatchMapping("edit")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponseUserDto> updateUser(@Valid @RequestBody EditUserDto editUserDto,
-                                           BindingResult bindingResult) {
+    public ResponseEntity<ResponseDto> updateUser(@Valid @RequestBody EditDto editDto,
+                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new UserNotUpdatedException(userService.bindingResultInfo(bindingResult));
+            throw new UserNotUpdatedException(dtoService.bindingResultInfo(bindingResult));
         }
 
-        return ResponseEntity.ok().body(userMapper.saveAndReturn(editUserDto));
+        return ResponseEntity.ok().body(dtoService.updateAndReturn(editDto));
     }
 
 
@@ -113,7 +112,6 @@ public class AdminsRestController {
     @GetMapping("roles")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Role>> getAllRoles() {
-
         return ResponseEntity.ok(new ArrayList<>(roleService.findAll()));
     }
 

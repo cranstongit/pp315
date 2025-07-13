@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class NewUserDto {
+public class NewDto {
 
     @NotEmpty(message = "Name should not be empty")
     private String firstName;
@@ -27,5 +27,4 @@ public class NewUserDto {
     private String password;
 
     private List<Long> roleIds;
-
 }

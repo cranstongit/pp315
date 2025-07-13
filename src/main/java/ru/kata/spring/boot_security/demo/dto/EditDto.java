@@ -9,7 +9,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class EditUserDto {
+public class EditDto {
 
     @NotNull(message = "id should not be null")
     @Min(value = 1, message = "id must be greater than 0")
@@ -29,5 +29,4 @@ public class EditUserDto {
     @NotNull(message = "roleIds should not be null")
     @Size(min = 1, message = "At least one role must be selected")
     private List<Long> roleIds;
-
 }

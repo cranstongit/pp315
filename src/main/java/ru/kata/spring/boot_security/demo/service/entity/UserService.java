@@ -1,7 +1,6 @@
-package ru.kata.spring.boot_security.demo.service;
+package ru.kata.spring.boot_security.demo.service.entity;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.validation.BindingResult;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
@@ -13,5 +12,5 @@ public interface UserService extends UserDetailsService {
     void delete(long id);
     Optional<List<User>> findAll();
     Optional<User> findByUsername(String username);
-    String bindingResultInfo(BindingResult bindingResult);
+    Optional<User> find(long id);
 }

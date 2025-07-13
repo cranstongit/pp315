@@ -4,7 +4,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 
 import java.util.Set;
 
-public record ResponseUserDto(
+public record ResponseDto(
         Long id,
         String firstName,
         String lastName,

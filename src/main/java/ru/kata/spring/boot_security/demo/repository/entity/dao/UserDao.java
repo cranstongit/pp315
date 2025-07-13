@@ -1,4 +1,4 @@
-package ru.kata.spring.boot_security.demo.dao;
+package ru.kata.spring.boot_security.demo.repository.entity.dao;
 
 import ru.kata.spring.boot_security.demo.model.User;
 

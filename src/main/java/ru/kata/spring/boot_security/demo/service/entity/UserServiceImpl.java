@@ -1,13 +1,10 @@
-package ru.kata.spring.boot_security.demo.service;
+package ru.kata.spring.boot_security.demo.service.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
+import ru.kata.spring.boot_security.demo.repository.entity.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
@@ -26,13 +23,9 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
    private final UserDao userDao;
-   private final RoleService roleService;
-   private final PasswordEncoder passwordEncoder;
 
-   public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
+   public UserServiceImpl(UserDao userDao) {
       this.userDao = userDao;
-      this.roleService = roleService;
-      this.passwordEncoder = passwordEncoder;
    }
 
 
@@ -57,7 +50,6 @@ public class UserServiceImpl implements UserService {
    @Transactional
    @Override
    public void delete(long id) {
-
       User existingUser = userDao.find(id);
 
       if (existingUser == null) {
@@ -81,6 +73,12 @@ public class UserServiceImpl implements UserService {
 
 
    @Override
+   public Optional<User> find(long id) {
+      return Optional.ofNullable(userDao.find(id));
+   }
+
+
+   @Override
    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
       User foundUser = userDao.findByUsername(username);
@@ -95,19 +93,6 @@ public class UserServiceImpl implements UserService {
 
    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
       return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
-   }
-
-
-   public String bindingResultInfo(BindingResult bindingResult) {
-      StringBuilder sb = new StringBuilder();
-
-      List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-      for (FieldError fe : fieldErrors) {
-         sb.append(fe.getField())
-                 .append(" - ").append(fe.getDefaultMessage())
-                 .append(";");
-      }
-      return sb.toString();
    }
 
 }
